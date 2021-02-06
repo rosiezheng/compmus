@@ -1,3 +1,7 @@
-# compmus
-Testing setup
-A line I wrote on my local computer
+# Computational Musicology 
+## Project Description
+Spotify is the gate to many music genres of all time around the whole world. When we click on “Browse”, there is a tab called “Genres and Moods”, including playlists for the genres Pop, Hip-Hop, Dance/Electronic, Indie, Rock, Soul, R&B, Latin, Country, Folk, Jazz, Blues, Metal, Classical, K-pop, Funk, and Punk. The playlist that cannot be found in any of these genres is “Borderless” and has the following description: “Beyond genre, beyond language, beyond borders”. However, it is not clear what musical components makes this playlist so-called borderless. Are the 98 songs in this playlist really that different from our common-known genres and why exactly? Has the time come to produce “borderless” music? 
+
+In this project, we will compare the Borderless playlist with playlists from the five most popular genres nowadays on Spotify: Pop, Hip Hop, Dance/Electronic, Indie, and Rock. The playlists are selected based on highest follower number for that genre. This lead to the following selection: Mega Hit Mix (Pop), I Love My ’90s Hip-Hop (Hip-Hop), Dance Party (Dance/Electronic), Ultimate Indie (Indie), and Rock Classics (Rock). We expect that the musical components which belong to a specific genre will not be recognised in the Borderless playlist. 
+
+Regarding that the selection of the playlists is only based on number of followers, a limitation could be that the chosen playlists do not fully represent the whole genres, but only the opinion of the big public. However, each playlist will have at least one classic song for that genre included. We can dedicate some detailed analysis on these song and compare them to the songs from the Borderless playlist.  

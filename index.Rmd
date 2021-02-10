@@ -1,0 +1,21 @@
+---
+title: "Portfolio"
+author: "Rosie Zheng"
+date: "10-2-2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(spotifyr)
+library(tidyverse)
+```
+
+```{r}
+disney <- get_playlist_audio_features("", "spotify:playlist:37i9dQZF1DX8C9xQcOrE6T")
+```
+
+

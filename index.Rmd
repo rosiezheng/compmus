@@ -1,6 +1,6 @@
 ---
-title: "Borderless Portfolio"
-author: "Rosie"
+title: "Borderless"
+author: "Rosie Zheng"
 date: "10-2-2021"
 output: html_document
 ---
@@ -9,22 +9,46 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+library(spotifyr)
+library(tidyverse)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+# Borderless Playlist
+```{r}
+borderless <- get_playlist_audio_features("", "37i9dQZF1DWZJmo7mlltU6")
+borderless 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Pop Playlist: Today's Top Hits
+```{r}
+pop <- get_playlist_audio_features("", "37i9dQZF1DXcBWIGoYBM5M")
+pop
+```
+
+# Hip-Hop Playlist: RapCaviar
+```{r}
+hiphop <- get_playlist_audio_features("", "37i9dQZF1DX0XUsuxWHRQd")
+hiphop
+```
+
+# Dance/Electronic Playlist: Dance Party
+```{r}
+dance <- get_playlist_audio_features("", "37i9dQZF1DXaXB8fQg7xif")
+dance
+```
+
+# Rock Playlist: Rock Classics
+```{r}
+rock <- get_playlist_audio_features("", "37i9dQZF1DWXRqgorJj26U")
+rock
+```
+
+# Indie Playlist: Ultimate Indie
+```{r}
+indie <- get_playlist_audio_features("", "37i9dQZF1DX2Nc3B70tvx0")
+indie 
+```
+
+
+

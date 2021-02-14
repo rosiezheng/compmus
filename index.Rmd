@@ -12,43 +12,124 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(spotifyr)
 library(tidyverse)
+library(dplyr)
+library(hrbrthemes)
+library(viridis)
+library(ggplot2)
 ```
 
-# Borderless Playlist
+# Used Playlists
 ```{r}
 borderless <- get_playlist_audio_features("", "37i9dQZF1DWZJmo7mlltU6")
-borderless 
-```
-
-# Pop Playlist: Today's Top Hits
-```{r}
 pop <- get_playlist_audio_features("", "37i9dQZF1DXcBWIGoYBM5M")
-pop
-```
-
-# Hip-Hop Playlist: RapCaviar
-```{r}
 hiphop <- get_playlist_audio_features("", "37i9dQZF1DX0XUsuxWHRQd")
-hiphop
-```
-
-# Dance/Electronic Playlist: Dance Party
-```{r}
 dance <- get_playlist_audio_features("", "37i9dQZF1DXaXB8fQg7xif")
-dance
-```
-
-# Rock Playlist: Rock Classics
-```{r}
 rock <- get_playlist_audio_features("", "37i9dQZF1DWXRqgorJj26U")
-rock
+indie <- get_playlist_audio_features("", "37i9dQZF1DX2Nc3B70tvx0")
 ```
 
-# Indie Playlist: Ultimate Indie
 ```{r}
-indie <- get_playlist_audio_features("", "37i9dQZF1DX2Nc3B70tvx0")
-indie 
+playlists_portfolio <-
+  bind_rows(
+    borderless %>% mutate(category = "Borderless"),
+    pop %>% mutate(category = "Pop"),
+    hiphop %>% mutate(category = "Hip-Hop"),
+    dance %>% mutate(category = "Dance/Electronic"),
+    rock %>% mutate(category = "Rock"),
+    indie %>% mutate(category = "Indie")
+  )
 ```
+
+```{r}
+playlists_portfolio %>%                    # Start with awards.
+  mutate(
+    mode = ifelse(mode == 0, "Minor", "Major")
+  ) %>%
+  ggplot(                     # Set up the plot.
+    aes(
+      x = valence,
+      y = energy,
+      size = loudness,
+      colour = mode
+    )
+  ) +
+  geom_point() +              # Scatter plot.
+  geom_rug(size = 0.1) +      # Add 'fringes' to show data distribution.
+  geom_text(                  # Add text labels from above.
+    aes(
+      x = valence,
+      y = energy,
+      label = label
+    ),
+    data = 
+      tibble(
+        label = c("", "", "", "", "", ""),
+        category = c("Borderless", "Pop", "Rock", "Indie", "Dance/Electronic", "Hip-Hop"),
+        valence = c(0.090, 0.123, 0.123, 0.123, 0.123, 0.123),
+        energy = c(0.101, 0.967, 0.123, 0.123, 0.123, 0.123)
+      ),
+    colour = "black",         # Override colour (not mode here).
+    size = 3,                 # Override size (not loudness here).
+    hjust = "left",           # Align left side of label with the point.
+    vjust = "bottom",         # Align bottom of label with the point.
+    nudge_x = -0.05,          # Nudge the label slightly left.
+    nudge_y = 0.02            # Nudge the label slightly up.
+  ) +
+  facet_wrap(~category) +     # Separate charts per playlist.
+  scale_x_continuous(         # Fine-tune the x axis.
+    limits = c(0, 1),
+    breaks = c(0, 0.50, 1),   # Use grid-lines for quadrants only.
+    minor_breaks = NULL       # Remove 'minor' grid-lines.
+  ) +
+  scale_y_continuous(         # Fine-tune the y axis in the same way.
+    limits = c(0, 1),
+    breaks = c(0, 0.50, 1),
+    minor_breaks = NULL
+  ) +
+  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
+    type = "qual",            # Qualitative set.
+    palette = "Paired"        # Name of the palette is 'Paired'.
+  ) +
+  scale_size_continuous(      # Fine-tune the sizes of each point.
+    trans = "exp",            # Use an exp transformation to emphasise loud.
+    guide = "none"            # Remove the legend for size.
+  ) +
+  theme_light() +             # Use a simpler theme.
+  labs(                       # Make the titles nice.
+    x = "Valence",
+    y = "Energy",
+    colour = "Mode"
+  )
+```
+
+```{r}
+# create a dataset
+data <- data.frame(
+  name=c( rep("A",500), rep("B",500), rep("B",500), rep("C",20), rep('D', 100)  ),
+  value=c( rnorm(500, 10, 5), rnorm(500, 13, 1), rnorm(500, 18, 1), rnorm(20, 25, 4), rnorm(100, 12, 1) )
+)
+
+# sample size
+sample_size = data %>% group_by(name) %>% summarize(num=n())
+
+# Plot
+data %>%
+  left_join(sample_size) %>%
+  mutate(myaxis = paste0(name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=value, fill=name)) +
+    geom_violin(width=1.4) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.2) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("A Violin wrapping a boxplot") +
+    xlab("")
+```
+
+
 
 
 

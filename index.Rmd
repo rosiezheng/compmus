@@ -18,7 +18,7 @@ library(viridis)
 library(ggplot2)
 ```
 
-# Used Playlists
+### Used Playlists
 ```{r}
 borderless <- get_playlist_audio_features("", "37i9dQZF1DWZJmo7mlltU6")
 pop <- get_playlist_audio_features("", "37i9dQZF1DXcBWIGoYBM5M")
@@ -41,21 +41,21 @@ playlists_portfolio <-
 ```
 
 ```{r}
-playlists_portfolio %>%                    # Start with awards.
+playlists_portfolio %>%                   
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
   ) %>%
-  ggplot(                     # Set up the plot.
+  ggplot(                    
     aes(
       x = valence,
       y = energy,
       size = loudness,
-      colour = mode
+      color = mode
     )
   ) +
-  geom_point() +              # Scatter plot.
-  geom_rug(size = 0.1) +      # Add 'fringes' to show data distribution.
-  geom_text(                  # Add text labels from above.
+  geom_point(alpha=0.5) + 
+  geom_rug(size = 0.1) +     
+  geom_text(                 
     aes(
       x = valence,
       y = energy,
@@ -63,49 +63,51 @@ playlists_portfolio %>%                    # Start with awards.
     ),
     data = 
       tibble(
-        label = c("", "", "", "", "", ""),
+        label = c("i'll find my way to you tomorrow", "Lonely (with benny blanco)", "	
+Walk On the Wild Side", "Frequency", "Pressure (feat. Tove Lo)", "Moonwalking in Calabasas (feat. Blueface) - Remix"),
         category = c("Borderless", "Pop", "Rock", "Indie", "Dance/Electronic", "Hip-Hop"),
-        valence = c(0.090, 0.123, 0.123, 0.123, 0.123, 0.123),
-        energy = c(0.101, 0.967, 0.123, 0.123, 0.123, 0.123)
+        valence = c(0.6610, 0.0927, 0.385, 0.2140, 0.3570, 0.7450),
+        energy = c(0.294, 0.239, 0.318, 0.200, 0.558, 0.341)
       ),
-    colour = "black",         # Override colour (not mode here).
-    size = 3,                 # Override size (not loudness here).
-    hjust = "left",           # Align left side of label with the point.
-    vjust = "bottom",         # Align bottom of label with the point.
-    nudge_x = -0.05,          # Nudge the label slightly left.
-    nudge_y = 0.02            # Nudge the label slightly up.
+    colour = "black",        
+    size = 1,                 
+    hjust = "left",          
+    vjust = "bottom",         
+    nudge_x = -0.05,          
+    nudge_y = 0.02            
   ) +
-  facet_wrap(~category) +     # Separate charts per playlist.
-  scale_x_continuous(         # Fine-tune the x axis.
+  facet_wrap(~category) +   
+  scale_x_continuous(         
     limits = c(0, 1),
-    breaks = c(0, 0.50, 1),   # Use grid-lines for quadrants only.
-    minor_breaks = NULL       # Remove 'minor' grid-lines.
+    breaks = c(0, 0.25, 0.5,0.75, 1), 
+    minor_breaks = NULL       
   ) +
-  scale_y_continuous(         # Fine-tune the y axis in the same way.
+  scale_y_continuous(         
     limits = c(0, 1),
-    breaks = c(0, 0.50, 1),
+    breaks = c(0, 0.25, 0.5, 0.75, 1),
     minor_breaks = NULL
   ) +
-  scale_colour_brewer(        # Use the Color Brewer to choose a palette.
-    type = "qual",            # Qualitative set.
-    palette = "Paired"        # Name of the palette is 'Paired'.
+  scale_colour_brewer(     
+    type = "qual",            
+    palette = "Pastel2"       
   ) +
-  scale_size_continuous(      # Fine-tune the sizes of each point.
-    trans = "exp",            # Use an exp transformation to emphasise loud.
-    guide = "none"            # Remove the legend for size.
+  scale_size_continuous(     
+    trans = "exp",           
+    guide = "none"         
   ) +
-  theme_light() +             # Use a simpler theme.
-  labs(                       # Make the titles nice.
+  theme_light() +             
+  labs(                      
     x = "Valence",
     y = "Energy",
     colour = "Mode"
   )
 ```
 
+Regarding these graphs, the Borderless playlist is widely distributed over valence and has energy levels of 0.25 and up. It seems that the higher the energy and valence, the louder the music. There are slighly more songs with major modalities than with minor ones. When comparing the Borderless playlist with the other genres, we observe that energy levels are similar to Hip-Hop, Pop, and Indie, valence levels are similar to Rock, loudness levels are similar to Pop and Hip-Hop, and mode is similar to Pop. 
 
 
 ```{r}
-# sample size
+# Sample size
 sample_size_portfolio = playlists_portfolio %>% group_by(playlist_name) %>% summarize(num=n())
 ```
 
@@ -116,19 +118,182 @@ playlists_portfolio %>%
   left_join(sample_size_portfolio) %>%
   mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
   ggplot( aes(x=myaxis, y=tempo, fill=playlist_name)) +
-    geom_violin(width=1.4) +
-    geom_boxplot(width=0.1, color="grey", alpha=0.2) +
-    scale_fill_viridis(discrete = TRUE) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
     theme_ipsum() +
     theme(
       legend.position="none",
-      plot.title = element_text(size=11)
+      plot.title = element_text(size=15)
     ) +
     ggtitle("Tempo") +
-    xlab("")
+    xlab("Playlist") +
+  ylab("BPM")
 ```
 
+The mean tempo for the Borderless playlist lays around 120 BPM. This mean comes closest to the Indie playlist and is mostly different from the Dance playlist. Furthermore, we observe that the distribution for tempo is wide-spread for the Borderless playlist and is similar to the distributions of the Rock, Pop, and Indie playlist. 
 
+```{r}
+# Plot
+playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=energy, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Energy") +
+    xlab("Playlist") +
+  ylab("Energy Level")
+```
 
+In the first graph, we observed that energy levels for Borderless were similar to Hip-Hop, Pop, and Indie. Here we can observe that the violin shape is mostly the samefor Pop and indie. Rap, however, shares the same boxplot.
 
+```{r}
+# Plot
+playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=loudness, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Loudness") +
+    xlab("Playlist") +
+  ylab("dB")
+```
+```{r}
+# Plot
+playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=danceability, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Danceability") +
+    xlab("Playlist") +
+  ylab("Danceability Level")
+```
 
+Danceability for Borderless is mostly similar to Indie. 
+
+```{r}
+# Plot
+playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=speechiness, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Speechiness") +
+    xlab("Playlist") +
+  ylab("Speechiness Level")
+```
+
+Speechiness is low for every genre except Hip-Hop which is logical. Borderless comes closest to Rock and Indie. 
+
+```{r}
+# Plot
+playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=acousticness, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Acousticness") +
+    xlab("Playlist") +
+  ylab("Acousticness Level")
+```
+
+The distribution for acousticness is almost the same for Rock. It is completely different from Dance.
+
+```{r}
+# Plot
+playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=instrumentalness, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Instrumentalness") +
+    xlab("Playlist") +
+  ylab("Instrunemntalness Level")
+```
+
+It seems that instrumentalness cannot be visualized very well with a violin plot. 
+
+```{r}
+# Plot
+playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=liveness, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Liveness") +
+    xlab("Playlist") +
+  ylab("Liveness Level")
+```
+
+The distribution for liveness is mostly similar to Indie but is more smeared out for higher values for Borderless. 
+
+```{r}
+# Plot
+playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=valence, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Valence") +
+    xlab("Playlist") +
+  ylab("Valence Level")
+```
+
+Valence would be most similar to Rock. However, there seem to be more lower valences in the Borderless playlist than in the Rock playlist.

@@ -2,7 +2,10 @@
 title: "Borderless"
 author: "Rosie Zheng"
 date: "20-2-2021"
-output: html_document
+output: 
+    flexdashboard::flex_dashboard:
+        storyboard: true
+        theme: flatly
 ---
 
 ```{r setup, include=FALSE}

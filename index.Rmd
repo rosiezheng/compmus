@@ -1,24 +1,34 @@
 ---
 title: "Borderless"
 author: "Rosie Zheng"
-date: "10-2-2021"
-output: html_document
+date: "20-2-2021"
+output: 
+  flexdashboard::flex_dashboard:
+  storyboard: true
+  theme: plotly
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r}
 library(spotifyr)
 library(tidyverse)
 library(dplyr)
 library(hrbrthemes)
 library(viridis)
 library(ggplot2)
+library(flexdashboard)
+library(plotly)
 ```
 
-### Used Playlists
+### Introduction
+
+Spotify is the gate to many music genres of all time around the whole world. When we click on “Browse”, there is a tab called “Genres and Moods”, including playlists for the genres Pop, Hip-Hop, Dance/Electronic, Indie, Rock, Soul, R&B, Latin, Country, Folk, Jazz, Blues, Metal, Classical, K-pop, Funk, and Punk. The playlist that cannot be found in any of these genres is “Borderless” and has the following description: “Beyond genre, beyond language, beyond borders”. However, it is not clear what musical components makes this playlist so-called borderless. Are the 98 songs in this playlist really that different from our common-known genres and why exactly? Has the time come to produce “borderless” music?
+
+In this project, we will compare the Borderless playlist with playlists from the five most popular genres nowadays on Spotify: Pop, Hip Hop, Dance/Electronic, Indie, and Rock. The playlists are selected based on highest follower number for that genre. This lead to the following selection: Today's Top Hits (Pop), RapCaviar (Hip-Hop), Dance Party (Dance/Electronic), Ultimate Indie (Indie), and Rock Classics (Rock). We expect that the musical components which belong to a specific genre will not be recognised in the Borderless playlist.
+
+Regarding that the selection of the playlists is only based on number of followers, a limitation could be that the chosen playlists do not fully represent the whole genres, but only the opinion of the big public. However, each playlist will have at least one classic song for that genre included. We can dedicate some detailed analysis on these song and compare them to the songs from the Borderless playlist.
+
+
 ```{r}
 borderless <- get_playlist_audio_features("", "37i9dQZF1DWZJmo7mlltU6")
 pop <- get_playlist_audio_features("", "37i9dQZF1DXcBWIGoYBM5M")
@@ -40,8 +50,10 @@ playlists_portfolio <-
   )
 ```
 
+### Placement of Borderless songs on the happy scale (energy + valence) in comparison to the other genres
+
 ```{r}
-playlists_portfolio %>%                   
+happiness <- playlists_portfolio %>%                   
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
   ) %>%
@@ -53,7 +65,7 @@ playlists_portfolio %>%
       color = mode
     )
   ) +
-  geom_point(alpha=0.5) + 
+  geom_point(alpha=0.7) + 
   geom_rug(size = 0.1) +     
   geom_text(                 
     aes(
@@ -70,7 +82,7 @@ Walk On the Wild Side", "Frequency", "Pressure (feat. Tove Lo)", "Moonwalking in
         energy = c(0.294, 0.239, 0.318, 0.200, 0.558, 0.341)
       ),
     colour = "black",        
-    size = 1,                 
+    size = 2,                 
     hjust = "left",          
     vjust = "bottom",         
     nudge_x = -0.05,          
@@ -101,7 +113,11 @@ Walk On the Wild Side", "Frequency", "Pressure (feat. Tove Lo)", "Moonwalking in
     y = "Energy",
     colour = "Mode"
   )
+
+ggplotly(happiness)
 ```
+
+***
 
 Regarding these graphs, the Borderless playlist is widely distributed over valence and has energy levels of 0.25 and up. It seems that the higher the energy and valence, the louder the music. There are slighly more songs with major modalities than with minor ones. When comparing the Borderless playlist with the other genres, we observe that energy levels are similar to Hip-Hop, Pop, and Indie, valence levels are similar to Rock, loudness levels are similar to Pop and Hip-Hop, and mode is similar to Pop. 
 
@@ -111,6 +127,7 @@ Regarding these graphs, the Borderless playlist is widely distributed over valen
 sample_size_portfolio = playlists_portfolio %>% group_by(playlist_name) %>% summarize(num=n())
 ```
 
+### Tempo of Borderless songs in comparison to the other genres
 
 ```{r}
 # Plot
@@ -129,9 +146,14 @@ playlists_portfolio %>%
     ggtitle("Tempo") +
     xlab("Playlist") +
   ylab("BPM")
+
 ```
 
+***
+
 The mean tempo for the Borderless playlist lays around 120 BPM. This mean comes closest to the Indie playlist and is mostly different from the Dance playlist. Furthermore, we observe that the distribution for tempo is wide-spread for the Borderless playlist and is similar to the distributions of the Rock, Pop, and Indie playlist. 
+
+### Energy of Borderless songs in comparison to the other genres
 
 ```{r}
 # Plot
@@ -150,9 +172,14 @@ playlists_portfolio %>%
     ggtitle("Energy") +
     xlab("Playlist") +
   ylab("Energy Level")
+
 ```
 
+***
+
 In the first graph, we observed that energy levels for Borderless were similar to Hip-Hop, Pop, and Indie. Here we can observe that the violin shape is mostly the samefor Pop and indie. Rap, however, shares the same boxplot.
+
+### Loudness of Borderless songs in comparison to the other genres
 
 ```{r}
 # Plot
@@ -171,7 +198,10 @@ playlists_portfolio %>%
     ggtitle("Loudness") +
     xlab("Playlist") +
   ylab("dB")
+
 ```
+### Danceability of Borderless songs in comparison to the other genres
+
 ```{r}
 # Plot
 playlists_portfolio %>%
@@ -189,9 +219,14 @@ playlists_portfolio %>%
     ggtitle("Danceability") +
     xlab("Playlist") +
   ylab("Danceability Level")
+
 ```
 
+***
+
 Danceability for Borderless is mostly similar to Indie. 
+
+### Speechiness of Borderless songs in comparison to the other genres
 
 ```{r}
 # Plot
@@ -210,9 +245,14 @@ playlists_portfolio %>%
     ggtitle("Speechiness") +
     xlab("Playlist") +
   ylab("Speechiness Level")
+
 ```
 
+***
+
 Speechiness is low for every genre except Hip-Hop which is logical. Borderless comes closest to Rock and Indie. 
+
+### Acousticness of Borderless songs in comparison to the other genres
 
 ```{r}
 # Plot
@@ -231,9 +271,14 @@ playlists_portfolio %>%
     ggtitle("Acousticness") +
     xlab("Playlist") +
   ylab("Acousticness Level")
+
 ```
 
+***
+
 The distribution for acousticness is almost the same for Rock. It is completely different from Dance.
+
+### Instrumentalness of Borderless songs in comparison to the other genres
 
 ```{r}
 # Plot
@@ -252,9 +297,14 @@ playlists_portfolio %>%
     ggtitle("Instrumentalness") +
     xlab("Playlist") +
   ylab("Instrunemntalness Level")
+
 ```
 
+***
+
 It seems that instrumentalness cannot be visualized very well with a violin plot. 
+
+### Liveness of Borderless songs in comparison to the other genres
 
 ```{r}
 # Plot
@@ -273,9 +323,14 @@ playlists_portfolio %>%
     ggtitle("Liveness") +
     xlab("Playlist") +
   ylab("Liveness Level")
+
 ```
 
+***
+
 The distribution for liveness is mostly similar to Indie but is more smeared out for higher values for Borderless. 
+
+### Valence of Borderless songs in comparison to the other genres
 
 ```{r}
 # Plot
@@ -295,5 +350,7 @@ playlists_portfolio %>%
     xlab("Playlist") +
   ylab("Valence Level")
 ```
+
+***
 
 Valence would be most similar to Rock. However, there seem to be more lower valences in the Borderless playlist than in the Rock playlist.

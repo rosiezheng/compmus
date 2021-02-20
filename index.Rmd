@@ -30,6 +30,8 @@ In this project, we will compare the Borderless playlist with playlists from the
 Regarding that the selection of the playlists is only based on number of followers, a limitation could be that the chosen playlists do not fully represent the whole genres, but only the opinion of the big public. However, each playlist will have at least one classic song for that genre included. We can dedicate some detailed analysis on these song and compare them to the songs from the Borderless playlist.
 
 
+### Placement of Borderless songs on the happy scale (energy + valence) in comparison to the other genres
+
 ```{r}
 borderless <- get_playlist_audio_features("", "37i9dQZF1DWZJmo7mlltU6")
 pop <- get_playlist_audio_features("", "37i9dQZF1DXcBWIGoYBM5M")
@@ -37,9 +39,7 @@ hiphop <- get_playlist_audio_features("", "37i9dQZF1DX0XUsuxWHRQd")
 dance <- get_playlist_audio_features("", "37i9dQZF1DXaXB8fQg7xif")
 rock <- get_playlist_audio_features("", "37i9dQZF1DWXRqgorJj26U")
 indie <- get_playlist_audio_features("", "37i9dQZF1DX2Nc3B70tvx0")
-```
 
-```{r}
 playlists_portfolio <-
   bind_rows(
     borderless %>% mutate(category = "Borderless"),
@@ -49,11 +49,7 @@ playlists_portfolio <-
     rock %>% mutate(category = "Rock"),
     indie %>% mutate(category = "Indie")
   )
-```
 
-### Placement of Borderless songs on the happy scale (energy + valence) in comparison to the other genres
-
-```{r}
 happiness <- playlists_portfolio %>%                   
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")
@@ -122,15 +118,12 @@ ggplotly(happiness)
 
 Regarding these graphs, the Borderless playlist is widely distributed over valence and has energy levels of 0.25 and up. It seems that the higher the energy and valence, the louder the music. There are slighly more songs with major modalities than with minor ones. When comparing the Borderless playlist with the other genres, we observe that energy levels are similar to Hip-Hop, Pop, and Indie, valence levels are similar to Rock, loudness levels are similar to Pop and Hip-Hop, and mode is similar to Pop. 
 
+### Tempo of Borderless songs in comparison to the other genres
 
 ```{r}
 # Sample size
 sample_size_portfolio = playlists_portfolio %>% group_by(playlist_name) %>% summarize(num=n())
-```
 
-### Tempo of Borderless songs in comparison to the other genres
-
-```{r}
 # Plot
 playlists_portfolio %>%
   left_join(sample_size_portfolio) %>%

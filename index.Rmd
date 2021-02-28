@@ -21,6 +21,140 @@ library(plotly)
 library(compmus)
 ```
 
+### The Borderless song Stargazing - Still Woozy compared with the pop song Heat Waves - Glass Animals.
+
+```{r chroma}
+stargazing <-
+  get_tidy_audio_analysis("0VF7YLIxSQKyNiFL3X6MmN") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+heatwaves <-
+  get_tidy_audio_analysis("3USxtqRwSYz57Ewm6wWRMp") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+bord_dist <-
+  compmus_long_distance(
+    stargazing %>% mutate(pitches = map(pitches, compmus_normalise, "manhattan")),
+    heatwaves %>% mutate(pitches = map(pitches, compmus_normalise, "manhattan")),
+    feature = pitches,
+    method = "aitchison"
+  )
+```
+
+```{r tallis-plot}
+pop_bord <-
+  bord_dist %>%
+  mutate(
+    stargazing = xstart + xduration / 2,
+    heatwaves = ystart + yduration / 2
+  ) %>%
+  ggplot(
+    aes(
+      x = stargazing,
+      y = heatwaves,
+      fill = d
+    )
+  ) +
+  geom_tile(aes(width = xduration, height = yduration)) +
+  coord_fixed() +
+  scale_x_continuous(
+    breaks = c(0, 60, 105, 150, 185, 220, 280, 327),
+    labels =
+      c(
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ),
+  ) +
+  scale_y_continuous(
+    breaks = c(0, 45, 80, 120, 145, 185, 240, 287),
+    labels =
+      c(
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ),
+  ) +
+  scale_fill_viridis_c(option = "E", guide = "none") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  labs(x = "Stargazing - Still Woozy", y = "Heat Waves - Glass Animals")
+pop_bord
+```
+
+***
+
+This visualisation of Stargazing - Still Woozy (Borderless) and Heat Waves - Glass Animals (Pop) between chroma features to show how the two songs within these genres align with one another. 
+
+For the first four parts, the relationship between the songs is consistent: the song from Still Woozy is somewhat more slowly than the one from Glass Animals. For the fifth part, Still Woozy is singing faster than Glass Animals. However, at the beginning of the sixth part, Still Woozy return to his regular tempo relationship with Glass Animals.
+
+Note (will be deleted later but more for feedback): in some or other way, this chromogram looks very much the same as the one in Ashley's portfolio but I changed the songs. How is this possible? These songs are very different than the ones from Ashley. Also, when I knit this, I can see that there is no observable blue diagonal line in the portfolio while there is one when I run this in R... 
+
+### The feel&sound from ‘Rocky - Still Woozy' [chroma and timbre features]
+
+```{r rocky}
+rocky <-
+  get_tidy_audio_analysis("5uDohC8URXwbGiHAMuKGoa") %>%
+  compmus_align(bars, segments) %>%
+  select(bars) %>%
+  unnest(bars) %>%
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "acentre", norm = "manhattan"
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  )
+bind_rows(
+  rocky %>% 
+    compmus_self_similarity(pitches, "aitchison") %>% 
+    mutate(d = d / max(d), type = "Chroma"),
+  rocky %>% 
+    compmus_self_similarity(timbre, "euclidean") %>% 
+    mutate(d = d / max(d), type = "Timbre")
+) %>%
+  mutate() %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(option = "E", guide = "none") +
+  theme_classic() + 
+  labs(x = "", y = "")
+```
+
+***
+
+The two self-similarity matrices are summarised at the bar level but have axes in seconds. They illustrate pitch- and timbre-based self-similarity within singer-songwriter Still Woozy's recently released ‘Rocky’ (19 February, 2021). Studying both matrices helps us to understand the structure of the song. It is remarkable that both matrices are very similar. It seems that only the first seconds of the song have a clearly different timbre than chroma. Furthermore, it seems like there can be no clear structure observed from the matrices while in the song itself, you can clearly hear the the difference between the verses and choruses. The song does not have a fade-out which is observable from these matrices since te pattern at the end is not different from the rest of the matrices. 
+
+
 ### Introduction
 
 Spotify is the gate to many music genres of all time around the whole world. When we click on “Browse”, there is a tab called “Genres and Moods”, including playlists for the genres Pop, Hip-Hop, Dance/Electronic, Indie, Rock, Soul, R&B, Latin, Country, Folk, Jazz, Blues, Metal, Classical, K-pop, Funk, and Punk. The playlist that cannot be found in any of these genres is “Borderless” and has the following description: “Beyond genre, beyond language, beyond borders”. However, it is not clear what musical components makes this playlist so-called borderless. Are the 98 songs in this playlist really that different from our common-known genres and why exactly? Has the time come to produce “borderless” music?

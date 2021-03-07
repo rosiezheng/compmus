@@ -1,11 +1,11 @@
 ---
-title: "Borderless"
+title: "What makes the playlist Borderless borderless?"
 author: "Rosie Zheng"
-date: "20-2-2021"
+date: "8-3-2021"
 output: 
     flexdashboard::flex_dashboard:
         storyboard: true
-        theme: flatly
+        theme: lumen
 ---
 
 ```{r setup, include=FALSE}
@@ -20,6 +20,105 @@ library(flexdashboard)
 library(plotly)
 library(compmus)
 ```
+
+```{r}
+borderless <- get_playlist_audio_features("", "37i9dQZF1DWZJmo7mlltU6")
+pop <- get_playlist_audio_features("", "37i9dQZF1DXcBWIGoYBM5M")
+hiphop <- get_playlist_audio_features("", "37i9dQZF1DX0XUsuxWHRQd")
+dance <- get_playlist_audio_features("", "37i9dQZF1DXaXB8fQg7xif")
+rock <- get_playlist_audio_features("", "37i9dQZF1DWXRqgorJj26U")
+indie <- get_playlist_audio_features("", "37i9dQZF1DX2Nc3B70tvx0")
+
+playlists_portfolio <-
+  bind_rows(
+    borderless %>% mutate(category = "Borderless"),
+    pop %>% mutate(category = "Pop"),
+    hiphop %>% mutate(category = "Hip-Hop"),
+    dance %>% mutate(category = "Dance/Electronic"),
+    rock %>% mutate(category = "Rock"),
+    indie %>% mutate(category = "Indie")
+  )
+
+# Sample size
+sample_size_portfolio = playlists_portfolio %>% group_by(playlist_name) %>% summarize(num=n())
+```
+
+### Key distribution over the different genres. Do the Borderless keys differ from the keys in other genres?
+
+ggplot(comics, aes(x = align, fill = gender)) + 
+  geom_bar(position = 'fill') +
+  ylab("proportion")
+  
+```{r}
+playlists_portfolio$key <- as.factor(playlists_portfolio$key)
+keys <- ggplot(playlists_portfolio, aes(x=playlist_name, fill=key)) +
+  geom_bar(position = 'fill', width=0.5) + ylab("Proportion") + xlab('Playlist name')
+keys + 
+  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
+  labs(title="Key distribution", 
+       subtitle="Keys across the different music genres",
+       xlab = 'Playlist name') 
+```
+***
+This histogram shows the distribution of keys across the different playlists. 
+
+**For feedback**: What should be noted is that the playlists do not have the same song count. Therefore, the heights of the bars would differ when I would do normal count but now I have taken the proportion. Or shall I delete songs from playlists manually in R in order to have equal sized playlists? Love to hear some feedback on this.  
+
+Comparing Borderless with the other genres, it seems that Ultimate Indie shows the most similar distribution of keys. However, some keys (1, 5, 7, 11) appear more in Borderless than in Ultimate Indie. It is remarkable that key 2 is the most apparent one in RapCaviar, while this is not the case in all other playlists. It appears that the keys are generally well-distributed in the Borderless playlist. Only keys 6, 8, 10 have apparent smaller numbers but the rest seems quite evenly divided. A striking founding is that key 3 is not present in the Borderless playlist at all. This key is also rare in the other genres but is present at least. This could be one of the reasons why this playlist is called Borderless. 
+
+### Loudness of Borderless songs in comparison to the other genres
+
+```{r}
+# Plot
+loudness <- playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=loudness, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Loudness") +
+    xlab("Playlist") +
+  ylab("dB")
+ggplotly(loudness)
+```
+
+This violin plot shows the distribution of loudness across the different playlists. It also includes boxplots to show the median and quartiles. The small black dots represent the outliers.
+
+The median of Borderless lays closest to the median of Today's Top Hits, while the quartiles look most similar to the Ultimate Indie playlist. Also the shape of the violin of Borderless is most similar to the one of Ultimate Indie. However, it appears that Ultimate Indie includes a few silent songs while Bordeless does not have this. 
+
+### Tempo of Borderless songs in comparison to the other genres
+
+```{r}
+# Plot
+tempo <- playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=tempo, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Tempo") +
+    xlab("Playlist") +
+  ylab("BPM")
+ggplotly(tempo)
+```
+
+***
+
+This violin plot shows the distribution of tempo across the different playlists. It also includes boxplots to show the median and quartiles. The small black dots represent the outliers.
+
+The median tempo for the Borderless playlist lays at 115 BPM. This median comes closest to the Indie playlist and is mostly different from the Dance playlist. Furthermore, we observe that the distribution for tempo is wide-spread for the Borderless playlist and is similar to the distributions of the Rock, Pop, and Indie playlist. 
 
 ### The Borderless song Stargazing - Still Woozy compared with the pop song Heat Waves - Glass Animals.
 
@@ -167,23 +266,6 @@ Regarding that the selection of the playlists is only based on number of followe
 ### Placement of Borderless songs on the happy scale (energy + valence) in comparison to the other genres
 
 ```{r}
-borderless <- get_playlist_audio_features("", "37i9dQZF1DWZJmo7mlltU6")
-pop <- get_playlist_audio_features("", "37i9dQZF1DXcBWIGoYBM5M")
-hiphop <- get_playlist_audio_features("", "37i9dQZF1DX0XUsuxWHRQd")
-dance <- get_playlist_audio_features("", "37i9dQZF1DXaXB8fQg7xif")
-rock <- get_playlist_audio_features("", "37i9dQZF1DWXRqgorJj26U")
-indie <- get_playlist_audio_features("", "37i9dQZF1DX2Nc3B70tvx0")
-
-playlists_portfolio <-
-  bind_rows(
-    borderless %>% mutate(category = "Borderless"),
-    pop %>% mutate(category = "Pop"),
-    hiphop %>% mutate(category = "Hip-Hop"),
-    dance %>% mutate(category = "Dance/Electronic"),
-    rock %>% mutate(category = "Rock"),
-    indie %>% mutate(category = "Indie")
-  )
-
 happiness <- playlists_portfolio %>%                   
   mutate(
     mode = ifelse(mode == 0, "Minor", "Major")

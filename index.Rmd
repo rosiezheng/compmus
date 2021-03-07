@@ -45,10 +45,6 @@ sample_size_portfolio = playlists_portfolio %>% group_by(playlist_name) %>% summ
 
 ### Key distribution over the different genres. Do the Borderless keys differ from the keys in other genres?
 
-ggplot(comics, aes(x = align, fill = gender)) + 
-  geom_bar(position = 'fill') +
-  ylab("proportion")
-  
 ```{r}
 playlists_portfolio$key <- as.factor(playlists_portfolio$key)
 keys <- ggplot(playlists_portfolio, aes(x=playlist_name, fill=key)) +
@@ -59,6 +55,7 @@ keys +
        subtitle="Keys across the different music genres",
        xlab = 'Playlist name') 
 ```
+
 ***
 
 This histogram shows the distribution of keys across the different playlists. 

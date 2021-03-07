@@ -60,6 +60,7 @@ keys +
        xlab = 'Playlist name') 
 ```
 ***
+
 This histogram shows the distribution of keys across the different playlists. 
 
 **For feedback**: What should be noted is that the playlists do not have the same song count. Therefore, the heights of the bars would differ when I would do normal count but now I have taken the proportion. Or shall I delete songs from playlists manually in R in order to have equal sized playlists? Love to hear some feedback on this.  
@@ -87,6 +88,7 @@ loudness <- playlists_portfolio %>%
   ylab("dB")
 ggplotly(loudness)
 ```
+***
 
 This violin plot shows the distribution of loudness across the different playlists. It also includes boxplots to show the median and quartiles. The small black dots represent the outliers.
 

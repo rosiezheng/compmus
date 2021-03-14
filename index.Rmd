@@ -43,6 +43,63 @@ playlists_portfolio <-
 sample_size_portfolio = playlists_portfolio %>% group_by(playlist_name) %>% summarize(num=n())
 ```
 
+### Tempo of Borderless songs in comparison to the other genres
+
+```{r}
+# Plot
+tempo <- playlists_portfolio %>%
+  left_join(sample_size_portfolio) %>%
+  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
+  ggplot( aes(x=myaxis, y=tempo, fill=playlist_name)) +
+    geom_violin(width=1, alpha=0.5) +
+    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
+    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=15)
+    ) +
+    ggtitle("Tempo") +
+    xlab("Playlist") +
+  ylab("BPM")
+ggplotly(tempo)
+```
+
+***
+
+This violin plot shows the distribution of tempo across the different playlists. It also includes boxplots to show the median and quartiles. The small black dots represent the outliers.
+
+The median tempo for the Borderless playlist lays at 115 BPM. This median comes closest to the Indie playlist and is mostly different from the Dance playlist. Furthermore, we observe that the distribution for tempo is wide-spread for the Borderless playlist and is similar to the distributions of the Rock, Pop, and Indie playlist. 
+
+### How does the fastest Borderless song and outlier "L'amor fa calor" look like in a tempogram?
+
+```{r}
+calor <- get_tidy_audio_analysis("2xhQ9obJQFjfjCdCugCY5D")
+calor %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+  
+calor %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+```
+
+***
+
+These tempograms show the tempo analysis from the Borderless song "Abandoned". Both temporgrams are Fourier-based and therefore stronly tend to pick up on tempo harmonics. Sometimes it can be more informative to wrap this into a cyclic tempogram. The lower tempogram shows such a cyclic tempogram. 
+
+Regarding the violin plot for Borderless from the previous tab, songs with a tempo above 172 are considered outliers.The greatest outlier is the song with a tempo value of 185.975 and belongs to the song "Abandoned" from artist Kit Sebastian. Therefore, these tempograms will probably look different from the rest of the Borderless songs.
+
+Listening to "Abandoned", it does not necessarily sound that there are a lot beats per minute. Also when looking at the cyclic tempogram, it looks like BPM is constantly around 95. For the other tempogram, it looks like there are two main tempos which play throughout the whole song: 200 and 400. Since both the ride symbal and the toms are constantly playing at the same time during this song, it could be the case that Spotify recognizes both instruments as beats. 
+
 ### Key distribution over the different genres. Do the Borderless keys differ from the keys in other genres?
 
 ```{r}
@@ -90,34 +147,6 @@ ggplotly(loudness)
 This violin plot shows the distribution of loudness across the different playlists. It also includes boxplots to show the median and quartiles. The small black dots represent the outliers.
 
 The median of Borderless lays closest to the median of Today's Top Hits, while the quartiles look most similar to the Ultimate Indie playlist. Also the shape of the violin of Borderless is most similar to the one of Ultimate Indie. However, it appears that Ultimate Indie includes a few silent songs while Bordeless does not have this. 
-
-### Tempo of Borderless songs in comparison to the other genres
-
-```{r}
-# Plot
-tempo <- playlists_portfolio %>%
-  left_join(sample_size_portfolio) %>%
-  mutate(myaxis = paste0(playlist_name, "\n", "n=", num)) %>%
-  ggplot( aes(x=myaxis, y=tempo, fill=playlist_name)) +
-    geom_violin(width=1, alpha=0.5) +
-    geom_boxplot(width=0.1, color="grey", alpha=0.8) +
-    scale_fill_viridis(discrete=TRUE, guide=FALSE, option="A") +
-    theme_ipsum() +
-    theme(
-      legend.position="none",
-      plot.title = element_text(size=15)
-    ) +
-    ggtitle("Tempo") +
-    xlab("Playlist") +
-  ylab("BPM")
-ggplotly(tempo)
-```
-
-***
-
-This violin plot shows the distribution of tempo across the different playlists. It also includes boxplots to show the median and quartiles. The small black dots represent the outliers.
-
-The median tempo for the Borderless playlist lays at 115 BPM. This median comes closest to the Indie playlist and is mostly different from the Dance playlist. Furthermore, we observe that the distribution for tempo is wide-spread for the Borderless playlist and is similar to the distributions of the Rock, Pop, and Indie playlist. 
 
 ### The Borderless song Stargazing - Still Woozy compared with the pop song Heat Waves - Glass Animals.
 

@@ -94,11 +94,11 @@ calor %>%
 
 ***
 
-These tempograms show the tempo analysis from the Borderless song "Abandoned". Both temporgrams are Fourier-based and therefore stronly tend to pick up on tempo harmonics. Sometimes it can be more informative to wrap this into a cyclic tempogram. The lower tempogram shows such a cyclic tempogram. 
+These tempograms show the tempo analysis from the Borderless song "Abandoned". Both temporgrams are Fourier-based and therefore stronly tend to pick up on tempo harmonics. Sometimes it can be more informative to wrap this into a cyclic tempogram. The right tempogram shows such a cyclic tempogram. 
 
 Regarding the violin plot for Borderless from the previous tab, songs with a tempo above 172 are considered outliers.The greatest outlier is the song with a tempo value of 185.975 and belongs to the song "Abandoned" from artist Kit Sebastian. Therefore, these tempograms will probably look different from the rest of the Borderless songs.
 
-Listening to "Abandoned", it does not necessarily sound that there are a lot beats per minute. Also when looking at the cyclic tempogram, it looks like BPM is constantly around 95. For the other tempogram, it looks like there are two main tempos which play throughout the whole song: 200 and 400. Since both the ride symbal and the toms are constantly playing at the same time during this song, it could be the case that Spotify recognizes both instruments as beats. 
+Listening to "Abandoned", it does not necessarily sound that there are a lot beats per minute. Also when looking at the cyclic tempogram (right), it looks like BPM is constantly around 95. For the other tempogram (left), it looks like there are two main tempos which play throughout the whole song: 200 and 400. Since both the ride symbal and the toms are constantly playing at the same time during this song, it could be the case that Spotify recognizes both instruments as beats. 
 
 ### Key distribution over the different genres. Do the Borderless keys differ from the keys in other genres?
 
